@@ -6,12 +6,6 @@ using Xbim.Common.XbimExtensions;
 
 public class ReadWexBim
 {
-    public static List<MyBimRegion> regions = new List<MyBimRegion>();
-    public static List<MyBimColor> colors = new List<MyBimColor>();
-    public static List<MyBimProduct> products = new List<MyBimProduct>();
-    public static List<MyBimShapeInstance> shapeInstances = new List<MyBimShapeInstance>();
-    public static List<MyBimTriangulation> triangulations = new List<MyBimTriangulation>();
-
     public static void ReadWexbimFile(string fileName)
     {
         Vector3 offsite;
@@ -41,9 +35,9 @@ public class ReadWexBim
                     var bounds = XbimRect3D.FromArray(boundsBytes);
                     bounds.X /= scale; bounds.Y /= scale; bounds.Z /= scale;
                     bounds.SizeX /= scale; bounds.SizeY /= scale; bounds.SizeZ /= scale;
-                    regions.Add(new MyBimRegion(population, centreX, centreY, centreZ, (float)bounds.SizeX, (float)bounds.SizeY, (float)bounds.SizeZ));
+                    MyBimGeomorty.regions.Add(new MyBimRegion(population, centreX, centreY, centreZ, (float)bounds.SizeX, (float)bounds.SizeY, (float)bounds.SizeZ));
                 }
-                offsite = regions[0].position;
+                offsite = MyBimGeomorty.regions[0].position;
 
                 //texture
                 for (int i = 0; i < styleCount; i++)
@@ -53,7 +47,7 @@ public class ReadWexBim
                     var green = br.ReadSingle();
                     var blue = br.ReadSingle();
                     var alpha = br.ReadSingle();
-                    colors.Add(new MyBimColor(styleId, red, green, blue, alpha));
+                    MyBimGeomorty.colors.Add(new MyBimColor(styleId, red, green, blue, alpha));
                 }
 
                 //product
@@ -65,7 +59,7 @@ public class ReadWexBim
                     XbimRect3D bb = XbimRect3D.FromArray(boxBytes);
                     //float x = (float)bb.X, y = (float)bb.Y, z = (float)bb.Z;
                     //float sizeX = (float)bb.SizeX, sizeY = (float)bb.SizeY, sizeZ = (float)bb.SizeZ;
-                    products.Add(new MyBimProduct(entityLabel, typeId));
+                    MyBimGeomorty.products.Add(new MyBimProduct(entityLabel, typeId));
                 }
 
                 //shape
@@ -85,9 +79,9 @@ public class ReadWexBim
                             var transform = XbimMatrix3D.FromArray(br.ReadBytes(sizeof(double) * 16));
 
                             si = new MyBimShapeInstance(ifcProductLabel, ifcTypeId, instanceLabel, styleLabel, transform);
-                            shapeInstances.Add(si);
+                            MyBimGeomorty.shapeInstances.Add(si);
                             curShapeInstances.Add(si);
-                            var p = products.Find(product => product.entityLabel == ifcProductLabel);
+                            var p = MyBimGeomorty.products.Find(product => product.entityLabel == ifcProductLabel);
                             p.AddShapeInstance(si);
                         }
                         var triangulation = br.ReadShapeTriangulation();
@@ -96,7 +90,7 @@ public class ReadWexBim
                         {
                             var tri = new MyBimTriangulation(triangulation, offsite, scale, csi.transform, true);
                             csi.AddTriangulation(tri);
-                            triangulations.Add(tri);
+                            MyBimGeomorty.triangulations.Add(tri);
                         }
                     }
                     else if (shapeRepetition == 1)
@@ -107,13 +101,13 @@ public class ReadWexBim
                         var styleLabel = br.ReadInt32();
 
                         si = new MyBimShapeInstance(ifcProductLabel, ifcTypeId, instanceLabel, styleLabel);
-                        shapeInstances.Add(si);
-                        var p = products.Find(product => product.entityLabel == ifcProductLabel);
+                        MyBimGeomorty.shapeInstances.Add(si);
+                        var p = MyBimGeomorty.products.Find(product => product.entityLabel == ifcProductLabel);
                         p.AddShapeInstance(si);
 
                         XbimShapeTriangulation triangulation = br.ReadShapeTriangulation();
                         var tri = new MyBimTriangulation(triangulation, offsite, scale);
-                        triangulations.Add(tri);
+                        MyBimGeomorty.triangulations.Add(tri);
 
                         si.AddTriangulation(tri);
                     }

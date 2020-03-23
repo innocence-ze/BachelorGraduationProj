@@ -4,6 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Common.Geometry;
 using Xbim.Ifc;
+using Xbim.Ifc4.Interfaces;
+using Xbim.Ifc4.ProductExtension;
+
+public static class MyBimGeomorty
+{
+    public static List<MyBimRegion> regions = new List<MyBimRegion>();
+    public static List<MyBimColor> colors = new List<MyBimColor>();
+    public static List<MyBimProduct> products = new List<MyBimProduct>();
+    public static List<MyBimShapeInstance> shapeInstances = new List<MyBimShapeInstance>();
+    public static List<MyBimTriangulation> triangulations = new List<MyBimTriangulation>();
+}
 
 public struct MyBimRegion
 {
