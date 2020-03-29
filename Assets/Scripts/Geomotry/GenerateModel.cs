@@ -27,9 +27,16 @@ public class GenerateModel
     /// <returns></returns>
     private static ISpatialData FindSubSpatialStructure(ISpatialData sd)
     {
+        HashSet<string> typeName = new HashSet<string>();
         foreach (var p in sd.SubProducts)
         {
-            p.ThisGameObject.transform.parent = sd.ThisGameObject.transform;
+            if (!typeName.Contains(p.TypeName))
+            {
+                typeName.Add(p.TypeName);
+                var go = new GameObject(p.TypeName);
+                go.transform.parent = sd.ThisGameObject.transform;
+            }
+            p.ThisGameObject.transform.parent = sd.ThisGameObject.transform.Find(p.TypeName);
             if (p.DecomposedProducts.Count > 0)
             {
                 foreach(var dp in p.DecomposedProducts)
@@ -84,10 +91,9 @@ public class GenerateModel
         foreach (var tri in si.triangulations)
         {
             mesh.vertices = tri.vertices.ToArray();
-            //mesh.normals = tri.normals.ToArray();
             mesh.triangles = tri.triangles.ToArray();
+            mesh.normals = tri.normals.ToArray();
             mesh.Optimize();
-            mesh.RecalculateNormals();
         }
 
         var mr = shapeGO.AddComponent<MeshRenderer>();
@@ -95,8 +101,62 @@ public class GenerateModel
         var c = MyBimGeomorty.colors.Find(cl => cl.styleLabel == si.styleLabel);
         mat.color = c.color;
         mr.material = mat;
+
+        if (c.color.a < 0.9f)
+            SetMaterialRenderingMode(mat, RenderingMode.Transparent);
+        else
+            SetMaterialRenderingMode(mat, RenderingMode.Opaque);
     }
 
+    public enum RenderingMode
+    {
+        Opaque,
+        Cutout,
+        Fade,
+        Transparent,
+    }
 
+    public static void SetMaterialRenderingMode(Material material, RenderingMode renderingMode)
+    {
+        switch (renderingMode)
+        {
+            case RenderingMode.Opaque:
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                material.SetInt("_ZWrite", 1);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = -1;
+                break;
+            case RenderingMode.Cutout:
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                material.SetInt("_ZWrite", 1);
+                material.EnableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = 2450;
+                break;
+            case RenderingMode.Fade:
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                material.SetInt("_ZWrite", 0);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.EnableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = 3000;
+                break;
+            case RenderingMode.Transparent:
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                material.SetInt("_ZWrite", 0);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = 3000;
+                break;
+        }
+    }
 
 }

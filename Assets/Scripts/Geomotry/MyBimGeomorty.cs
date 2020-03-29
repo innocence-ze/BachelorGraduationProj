@@ -123,21 +123,30 @@ public struct MyBimTriangulation
             bimTriangulation = triangulation;
 
         vertices = new List<Vector3>();
-        triangles = new List<int>();
         normals = new List<Vector3>();
 
-        foreach (var v in bimTriangulation.Vertices)
+        bimTriangulation.ToPointsWithNormalsAndIndices(out List<float[]> points, out List<int> indices);
+
+        triangles = indices;
+        foreach(var p in points)
         {
-            vertices.Add(new Vector3((float)v.X, (float)v.Y, (float)v.Z) / scale - offsite);
+            var vertice = new Vector3(p[0], p[1], p[2]) / scale - offsite;
+            var normal = new Vector3(p[3], p[4], p[5]);
+            vertices.Add(vertice);
+            normals.Add(normal);
         }
-        foreach (var f in bimTriangulation.Faces)
-        {
-            triangles.AddRange(f.Indices);
-            foreach (var n in f.Normals)
-            {
-                var nor = new Vector3((float)n.Normal.X, (float)n.Normal.Y, (float)n.Normal.Z);
-                normals.Add(nor);
-            }
-        }
+        //foreach (var v in bimTriangulation.Vertices)
+        //{
+        //    vertices.Add(new Vector3((float)v.X, (float)v.Y, (float)v.Z) / scale - offsite);
+        //}
+        //foreach (var f in bimTriangulation.Faces)
+        //{
+        //    triangles.AddRange(f.Indices);
+        //    foreach (var n in f.Normals)
+        //    {
+        //        var nor = new Vector3((float)n.Normal.X, (float)n.Normal.Y, (float)n.Normal.Z);
+        //        normals.Add(nor);
+        //    }
+        //}
     }
 }
