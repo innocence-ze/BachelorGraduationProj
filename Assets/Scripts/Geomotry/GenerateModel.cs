@@ -71,6 +71,10 @@ public class GenerateModel
         var data = go.AddComponent<ProductData>();
         data.ProductGeoData = product;
         SomeValue.products.Add(data);
+
+        var prodCtrl = go.AddComponent<ProductController>();
+        prodCtrl.id = data.ProductGeoData.entityLabel;
+
         foreach (var si in product.shapeInstances)
             GenerateShapeInstance(si, go);
         return go;

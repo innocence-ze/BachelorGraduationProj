@@ -7,13 +7,6 @@ using UnityEngine;
 
 public class ProjectController : MonoBehaviour
 {
-    List<GameObject> productObjects = new List<GameObject>();
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-
-    }
 
     void OnGUI()
     {
