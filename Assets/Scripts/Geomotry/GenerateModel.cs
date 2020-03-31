@@ -116,6 +116,11 @@ public class GenerateModel
         Transparent,
     }
 
+    /// <summary>
+    /// set alpha value of some transparent product
+    /// </summary>
+    /// <param name="material"></param>
+    /// <param name="renderingMode"></param>
     public static void SetMaterialRenderingMode(Material material, RenderingMode renderingMode)
     {
         switch (renderingMode)
@@ -159,4 +164,30 @@ public class GenerateModel
         }
     }
 
+
+    public static void AppendCollider(IProductData product)
+    {
+        if (product.ProductGeoData.shapeInstances.Count == 0)
+            return;
+
+        var mc = product.ThisGameObject.AddComponent<MeshCollider>();
+        CombineInstance[] combimes = new CombineInstance[product.ProductGeoData.shapeInstances.Count];
+        var mesh = new Mesh();
+
+        var thisTransform = product.ThisGameObject.transform;
+        int j = 0;
+        for(int i = 0; i < thisTransform.childCount; i++)
+        {
+            if (thisTransform.GetChild(i).GetComponent<MeshRenderer>() != null)
+            {
+                combimes[j].mesh = thisTransform.GetChild(i).GetComponent<MeshFilter>().mesh;
+                combimes[j].transform = thisTransform.GetChild(i).localToWorldMatrix;
+                j++;
+            }
+        }
+        mesh.CombineMeshes(combimes);
+        mesh.name = product.ProductName;
+        mc.sharedMesh = mesh;
+        mc.convex = true;
+    }
 }

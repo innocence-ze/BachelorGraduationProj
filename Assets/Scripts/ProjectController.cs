@@ -19,25 +19,32 @@ public class ProjectController : MonoBehaviour
     {
         if (GUI.Button(new Rect(10, 10, 100, 50), "Open"))
         {
-            SomeValue.fileName = OpenDialogFile().Replace(".ifc", "");
-            GenerateWexBim();
-            RenderIFCModel();
+            var fullFileName = OpenDialogFile();
+            if (fullFileName != null)
+            {
+                SomeValue.fileName = fullFileName.Replace(".ifc", "");
+                GenerateWexBim();
+                RenderIFCModel();
+            }
         }
     }
 
     private void RenderIFCModel()
     {
         //generate Model
-        ReadWexBim.ReadWexbimFile(SomeValue.WexbimFileName);
+        BimReader.ReadWexbimFile(SomeValue.WexbimFileName);
         foreach(var p in MyBimGeomorty.products)
         {
-            productObjects.Add(GenerateModel.GenerateProduct(p));
+            GenerateModel.GenerateProduct(p);
         }
 
-
         //generate spatial structure
-        var projData = ReadBim.GetBimSpatialStructure(SomeValue.BimFileName);
+        var projData = BimReader.GetBimSpatialStructure(SomeValue.BimFileName);
         GenerateModel.GenerateSpatialStructure(projData);
+        foreach(var p in SomeValue.products)
+        {
+            GenerateModel.AppendCollider(p);
+        }
 
         projData.ThisGameObject.transform.rotation = Quaternion.Euler(-90, 0, 0);
     }
@@ -57,10 +64,14 @@ public class ProjectController : MonoBehaviour
 
         if (OpenFileName.GetSaveFileName(openFileName))
         {
-            UnityEngine.Debug.Log(openFileName.file);
-            UnityEngine.Debug.Log(openFileName.fileTitle);
+            //UnityEngine.Debug.Log(openFileName.file);
+            //UnityEngine.Debug.Log(openFileName.fileTitle);
+            return openFileName.file;
         }
-        return openFileName.file;
+        else
+        {
+            return null;
+        }
     }
 
     private void GenerateWexBim()
