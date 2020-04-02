@@ -10,7 +10,7 @@ public class ProjectController : MonoBehaviour
 
     void OnGUI()
     {
-        if (GUI.Button(new Rect(10, 10, 100, 50), "Open"))
+        if (GUI.Button(new Rect(0, 0, 90, 40), "Open"))
         {
             var fullFileName = OpenDialogFile();
             if (fullFileName != null)
