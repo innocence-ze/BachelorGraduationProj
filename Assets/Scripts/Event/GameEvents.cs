@@ -7,15 +7,20 @@ public class GameEvents : MonoBehaviour
 {
     public static GameEvents current;
 
+    public GameObject selectedProduct;
+
     private void Awake()
     {
         current = this;
     }
 
-    public event Action<int> OnProductsSelected;
+    public event Func<int,GameObject> OnProductsSelected;
     public void ProductSelected(int id)
     {
-        OnProductsSelected?.Invoke(id);
+        if (OnProductsSelected != null)
+        {
+            selectedProduct = OnProductsSelected(id);
+        }
     }
 
 }

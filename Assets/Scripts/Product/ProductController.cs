@@ -12,12 +12,13 @@ public class ProductController : MonoBehaviour
         GameEvents.current.OnProductsSelected += OnSelected;
     }
 
-    void OnSelected(int id)
+    GameObject OnSelected(int id)
     {
         if (id != this.id)
-            return;
+            return null;
 
         Debug.Log(gameObject.name);
+        return gameObject;
     }
 
     private void OnDestroy()
