@@ -1,42 +1,44 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class test : MonoBehaviour
 {
-    public float length = 1;
-
-    public Vector3 bias;
-    public Vector2[] uv;
-    public Vector3[] nor;
+    public UITree uiTree;
     private void Start()
     {
-        uv = gameObject.GetComponent<MeshFilter>().mesh.uv;
-        nor = gameObject.GetComponent<MeshFilter>().mesh.normals;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // 获取网格法线
-        Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
-
-        Vector3[] vertices = mesh.vertices;
-        Vector3[] normals = mesh.normals;
-
-        for (var i = 0; i < normals.Length; i++)
-        {
-            Vector3 pos = vertices[i];
-            pos.x *= transform.localScale.x;
-            pos.y *= transform.localScale.y;
-            pos.z *= transform.localScale.z;
-            pos += transform.position + bias;
-
-            Debug.DrawLine
-            (
-                pos,
-                pos + normals[i] * length, Color.red);
-        }
+        UITreeData TreeRoot = new UITreeData("我的项目", new List<UITreeData>()
+            {
+                new UITreeData("unity专栏",new List<UITreeData>()
+                {
+                    new UITreeData("自定义UI组件专栏",new List<UITreeData>()
+                    {
+                        new UITreeData("目录树"),
+                        new UITreeData("鼠标响应",new List<UITreeData>()
+                        {
+                            new UITreeData("OnMouseButton"),
+                            new UITreeData("Ray")
+                        })
+                    }),
+                    new UITreeData("调用外部exe"),
+                    new UITreeData("Shader专栏",new List<UITreeData>()
+                    {
+                        new UITreeData("Dissolve Shader"),
+                        new UITreeData("Transparent Shader")
+                    })
+                }),
+                new UITreeData("ifc专栏",new List<UITreeData>()
+                {
+                    new UITreeData("基础篇"),
+                    new UITreeData("高级篇",new List<UITreeData>()
+                    {
+                        new UITreeData("空间结构"),
+                        new UITreeData("属性信息")
+                    })
+                })
+            });
+        uiTree.Inject(TreeRoot);
     }
 
 }

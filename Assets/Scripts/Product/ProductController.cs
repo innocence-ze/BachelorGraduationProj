@@ -28,6 +28,8 @@ public class ProductController : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            return;
         GameEvents.current.ProductSelected(id);
     }
 }
