@@ -14,6 +14,6 @@ public static class SomeValue
 
 
     public static IProjectData project;
-    public static List<IProductData> products= new List<IProductData>();
+    public static List<IElementData> Elements = new List<IElementData>();
     public static List<ISpatialData> spatialStructures = new List<ISpatialData>();
 }

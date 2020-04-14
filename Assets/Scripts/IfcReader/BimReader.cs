@@ -6,7 +6,7 @@ using UnityEngine;
 using Xbim.Common.Geometry;
 using Xbim.Common.XbimExtensions;
 using Xbim.Ifc;
-using Xbim.Ifc4.Interfaces;
+using Xbim.Ifc2x3.Interfaces;
 
 public class BimReader
 {
@@ -23,19 +23,16 @@ public class BimReader
             var proj = model.Instances.FirstOrDefault<IIfcProject>();
             var go = new GameObject();
             var pd = go.AddComponent<ProjectData>();
-            pd.Name = proj.Name;
-            pd.ThisProject = proj;
-            SomeValue.project = pd;
-            go.name = pd.Name;
+            pd.InitialProject(proj);
 
             foreach (var item in proj.IsDecomposedBy.SelectMany(r => r.RelatedObjects))
-                pd.AddSubSpatial(GetSpatialSturcture(proj, item));
-            var spatialProducts = SomeValue.products.FindAll(p => p.HaveSpatialStructure == false);
-            AddGeoProductToSpatialStructure(SomeValue.spatialStructures, spatialProducts);
+                pd.AddRelatedProduct(GetSpatialSturcture(item));
+
+            //var spatialProducts = SomeValue.Elements.FindAll(p => p.HaveSpatialStructure == false);
+            //AddGeoProductToSpatialStructure(SomeValue.spatialStructures, spatialProducts);
+
             return pd;
         }
-
-
     }
 
     /// <summary>
@@ -44,18 +41,16 @@ public class BimReader
     /// <param name="father"></param>
     /// <param name="cur"></param>
     /// <returns></returns>
-    private static ISpatialData GetSpatialSturcture(IIfcObjectDefinition father,IIfcObjectDefinition cur)
+    private static ISpatialData GetSpatialSturcture(IIfcObjectDefinition cur)
     {
-        ISpatialData sp = default;
+        ISpatialData spd = default;
         //whether cur is spatial structure or not
-        var spatialElement = cur as IIfcSpatialStructureElement;
-        if (spatialElement != null)
+        if (cur is IIfcSpatialStructureElement spatialElement)
         {
             //get spatialElement's spatialData
-            sp = InstantiateCurSpatial(spatialElement);
-            if (sp != null)
+            spd = InstantiateCurSpatial(spatialElement);
+            if (spd != null)
             {
-                SomeValue.spatialStructures.Add(sp);
                 //get elements by using IfcRelContainedInSpatialElement 
                 var containedElements = spatialElement.ContainsElements.SelectMany(rel => rel.RelatedElements);
                 if (containedElements.Count() > 0)
@@ -63,68 +58,70 @@ public class BimReader
                     foreach (var element in containedElements)
                     {
                         //use productData.entityLabel to find element's geomotry data
-                        var prod = SomeValue.products.Find(p => p.ProductGeoData.entityLabel == element.EntityLabel);
+                        /*var ele = SomeValue.buildingElements.Find(e => e.ProductGeoData.entityLabel == element.EntityLabel);
+                        if(!(element is IIfcElement))
+                        {
+                            continue;
+                        }
                         //this is mainly because of some element is decomposed by some subElement.e.g.(stair=>stairFilght+Railing)
-                        if (prod == null)
+                        if (ele == null)
                         {
                             var go = new GameObject();
-                            var pd = go.AddComponent<ProductData>();
+                            var pd = go.AddComponent<ElementData>();
                             pd.ProductGeoData = new MyBimProduct(element.EntityLabel, (short)element.EntityLabel);
-                            SetProduct(pd, element);
-                            sp.AddProduct(pd);
+                            pd.InitialElement(element as IIfcElement);
+                            sp.AddRelatedProduct(pd);
                             SetDecomposeProduct(pd,element.IsDecomposedBy);
                             //Debug.Log(sp.Name + " : " + element.Name + ", [" + element.GetType().Name + "] " + element.EntityLabel+" countain subProduct: " + element.IsDecomposedBy.Count());                           
                         }
                         else
                         {
-                            SetProduct((ProductData)prod, element);
-                            sp.AddProduct(prod);
+                            ele.InitialElement(element as IIfcElement);
+                            sp.AddRelatedProduct(ele);
+                        }*/
+                        if (element is IIfcElement)
+                        {
+                            var go = new GameObject();
+                            var pd = go.AddComponent<ElementData>();
+                            pd.InitialElement(element as IIfcElement);
+                            spd.AddRelatedProduct(pd);
+                            if (element.IsDecomposedBy != null && element.IsDecomposedBy.Count() > 0)
+                            {
+                                pd.SetDecomposeProduct(element.IsDecomposedBy);
+                            }
                         }
                     }
                 }
-            }          
+            }
         }
+
         //use IfcRelAggregares to obtain sub spatial structure
         foreach (var item in cur.IsDecomposedBy.SelectMany(r => r.RelatedObjects))
-            sp.AddSubSpatial(GetSpatialSturcture(cur,item));
-        return sp;
-    }
-
-    /// <summary>
-    /// initialization parameters of productData:MonoBehaviour by ifcProduct
-    /// </summary>
-    /// <param name="pd"></param>
-    /// <param name="p"></param>
-    private static void SetProduct(ProductData pd, IIfcProduct p)
-    {
-        pd.ProductName = p.Name;
-        pd.TypeName = p.GetType().Name;
-        pd.ThisGameObject.name = pd.ProductName + "[" + pd.TypeName + "]#" + pd.ProductGeoData.entityLabel;
-        pd.ThisProduct = p;
-        pd.HaveSpatialStructure = true;
+            spd.AddRelatedProduct(GetSpatialSturcture(item));
+        return spd;
     }
 
     /// <summary>
     /// set decomposed product and return decomposingProducts
     /// </summary>
-    /// <param name="productData"></param>
+    /// <param name="eleData"></param>
     /// <param name="connects"></param>
     /// <returns></returns>
-    private static List<IProductData> SetDecomposeProduct(IProductData productData, IEnumerable<IIfcRelAggregates> connects)
-    {
-        List<IProductData> pds = new List<IProductData>();
-        foreach(var c in connects)
-        {
-            foreach (var prod in c.RelatedObjects)
-            {
-                var pd = SomeValue.products.Find(p => p.ProductGeoData.entityLabel == prod.EntityLabel);
-                SetProduct((ProductData)pd, (IIfcProduct)prod);
-                pds.Add(pd);
-            }
-        }
-        productData.DecomposedProducts = pds;
-        return pds;
-    }
+    //private static List<IElementData> SetDecomposeProduct(IElementData eleData, IEnumerable<IIfcRelDecomposes> connects)
+    //{
+    //    List<IElementData> eds = new List<IElementData>();
+    //    foreach(var c in connects)
+    //    {
+    //        foreach (var prod in c.RelatedObjects)
+    //        {
+    //            var ed = SomeValue.Elements.Find(p => p.ProductGeoData.entityLabel == prod.EntityLabel);
+    //            ed.InitialElement(prod as IIfcElement);
+    //            eds.Add(ed);
+    //            eleData.AddRelatedProduct(ed);
+    //        }
+    //    }
+    //    return eds;
+    //}
 
     /// <summary>
     /// instantiate spatialData by ifcSpatialStructureElement
@@ -157,10 +154,7 @@ public class BimReader
         }
         if (sp != null)
         {
-            sp.Name = s.Name;
-            sp.ThisStructure = s;
-            go.name = sp.Name + "[" + sp.ThisStructure.GetType().Name + "]#" + sp.EntityLabel;
-            SomeValue.spatialStructures.Add(sp);
+            sp.InitialSpatialElement(s);
         }
         return sp;
     }
@@ -170,7 +164,7 @@ public class BimReader
     /// </summary>
     /// <param name="sds"></param>
     /// <param name="pds"></param>
-    private static void AddGeoProductToSpatialStructure(List<ISpatialData> sds, List<IProductData> pds)
+   /* private static void AddGeoProductToSpatialStructure(List<ISpatialData> sds, List<IElementData> pds)
     {
         foreach (var sd in sds)
         {
@@ -178,10 +172,10 @@ public class BimReader
             if (pd != null)
             {
                 pds.Remove(pd);
-                SomeValue.products.Remove(pd);
-                var spd = sd.ThisGameObject.AddComponent<ProductData>();
+                SomeValue.Elements.Remove(pd);
+                var spd = sd.ThisGameObject.AddComponent<ElementData>();
                 spd.ProductGeoData = pd.ProductGeoData;
-                spd.ThisProduct = pd.ThisProduct;
+                spd.ThisElement = pd.ThisElement;
 
                 var children = pd.ThisGameObject.GetComponentsInChildren<MeshRenderer>();
                 if(sd.ThisStructure is IIfcSpace)
@@ -196,7 +190,7 @@ public class BimReader
                 Object.Destroy(pd.ThisGameObject);
             }
         }
-    }
+    }*/
     #endregion
 
     /// <summary>
@@ -276,7 +270,7 @@ public class BimReader
                             var transform = XbimMatrix3D.FromArray(br.ReadBytes(sizeof(double) * 16));
 
                             si = new MyBimShapeInstance(ifcProductLabel, ifcTypeId, instanceLabel, styleLabel, transform);
-                            MyBimGeomorty.shapeInstances.Add(si);
+                            //MyBimGeomorty.shapeInstances.Add(si);
                             curShapeInstances.Add(si);
                             var p = MyBimGeomorty.products.Find(product => product.entityLabel == ifcProductLabel);
                             p.AddShapeInstance(si);
@@ -287,7 +281,7 @@ public class BimReader
                         {
                             var tri = new MyBimTriangulation(triangulation, offsite, scale, csi.transform, true);
                             csi.AddTriangulation(tri);
-                            MyBimGeomorty.triangulations.Add(tri);
+                            //MyBimGeomorty.triangulations.Add(tri);
                         }
                     }
                     else if (shapeRepetition == 1)
@@ -298,13 +292,13 @@ public class BimReader
                         var styleLabel = br.ReadInt32();
 
                         si = new MyBimShapeInstance(ifcProductLabel, ifcTypeId, instanceLabel, styleLabel);
-                        MyBimGeomorty.shapeInstances.Add(si);
+                        //MyBimGeomorty.shapeInstances.Add(si);
                         var p = MyBimGeomorty.products.Find(product => product.entityLabel == ifcProductLabel);
                         p.AddShapeInstance(si);
 
                         XbimShapeTriangulation triangulation = br.ReadShapeTriangulation();
                         var tri = new MyBimTriangulation(triangulation, offsite, scale);
-                        MyBimGeomorty.triangulations.Add(tri);
+                        //MyBimGeomorty.triangulations.Add(tri);
 
                         si.AddTriangulation(tri);
                     }

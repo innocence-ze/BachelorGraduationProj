@@ -23,7 +23,7 @@ public class CameraFollow : MonoBehaviour
         if (target == null)
             return;
         transform.LookAt(transform);
-        distance = maxDistance;
+        distance = minDistance;
         offsitePos = distance * (transform.position - target.position).normalized;
         transform.position = offsitePos + target.position;
     }
@@ -33,20 +33,20 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null)
             return;
-        ScrollView();
+        //ScrollView();
         RotateView();
         transform.position = offsitePos + target.position;
     }
 
-    void ScrollView()
-    {
-        if(Input.GetAxis("Mouse ScrollWheel") != 0)
-        {
-            distance -= Input.GetAxis("Mouse ScrollWheel") * scrollSpeed * Time.deltaTime;
-            distance = Mathf.Clamp(distance, minDistance, maxDistance);
-            offsitePos = (transform.position - target.position).normalized * distance;
-        }
-    }
+    //void ScrollView()
+    //{
+    //    if(Input.GetAxis("Mouse ScrollWheel") != 0)
+    //    {
+    //        distance -= Input.GetAxis("Mouse ScrollWheel") * scrollSpeed * Time.deltaTime;
+    //        distance = Mathf.Clamp(distance, minDistance, maxDistance);
+    //        offsitePos = (transform.position - target.position).normalized * distance;
+    //    }
+    //}
     
     void RotateView()
     {

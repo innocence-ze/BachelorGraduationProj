@@ -9,17 +9,20 @@ public class UITreeData
     public List<UITreeData> ChildNodes;
     public int Layer = 0;
     public string Name = string.Empty;
+    public int Label;
 
     public UITreeData() { }
-    public UITreeData(string name, int layer = 0)
+    public UITreeData(string name, int label = 0, int layer = 0)
     {
+        Label = label;
         Name = name;
         Layer = layer;
         Parent = null;
         ChildNodes = new List<UITreeData>();
     }
-    public UITreeData(string name, List<UITreeData> childNodes, int layer = 0)
+    public UITreeData(string name, List<UITreeData> childNodes, int label = 0, int layer = 0)
     {
+        Label = label;
         Name = name;
         Parent = null;
         ChildNodes = childNodes;
@@ -77,6 +80,21 @@ public class UITreeData
         ChildNodes = null;
     }
 
+    public UITreeData FindChildren(UITreeData uiTreeData)
+    {
+        return ChildNodes.Find(c => c.Equals(uiTreeData));
+    }
+
+    public UITreeData FindChildren(string n)
+    {
+        return ChildNodes.Find(c => c.Name == n);
+    }
+
+    public UITreeData FindChildren(int label)
+    {
+        return ChildNodes.Find(c => c.Label == label);
+    }
+
     private void ResetChildren(UITreeData treeData)
     {
         for (int i = 0; i < treeData.ChildNodes.Count; i++)
@@ -96,7 +114,7 @@ public class UITreeData
     {
         UITreeData other = obj as UITreeData;
         if (null == other) return false;
-        return other.Name.Equals(Name) && other.Layer.Equals(Layer);
+        return other.Name.Equals(Name) && other.Layer.Equals(Layer) && other.Label.Equals(Label);
     }
 
     public override int GetHashCode()

@@ -5,17 +5,18 @@ using UnityEngine;
 
 public class GenerateModel
 {
+    /*
     /// <summary>
     /// according project data to create hierarchical structure
     /// </summary>
     /// <param name="pd"></param>
     /// <returns></returns>
-    public static GameObject GenerateSpatialStructure(IProjectData pd)
+    public static GameObject GenerateRelatedProducts(IProjectData pd)
     {
-        foreach(var spatial in pd.SubSpatials)
+        foreach(var spatial in pd.RelatedProducts)
         {
             spatial.ThisGameObject.transform.parent = pd.ThisGameObject.transform;
-            FindSubSpatialStructure(spatial);
+            AppendRelatedProducts(spatial);
         }
         return pd.ThisGameObject;
     }
@@ -25,59 +26,79 @@ public class GenerateModel
     /// </summary>
     /// <param name="sd"></param>
     /// <returns></returns>
-    private static ISpatialData FindSubSpatialStructure(ISpatialData sd)
+    private static ISpatialData AppendRelatedProducts(ISpatialData sd)
     {
         HashSet<string> typeName = new HashSet<string>();
-        foreach (var p in sd.SubProducts)
+        int spatialCount = 0;
+        foreach (var p in sd.RelatedProducts)
         {
-            if (!typeName.Contains(p.TypeName))
+            if(p is IElementData)
             {
-                typeName.Add(p.TypeName);
-                var go = new GameObject(p.TypeName);
-                go.transform.parent = sd.ThisGameObject.transform;
-            }
-            p.ThisGameObject.transform.parent = sd.ThisGameObject.transform.Find(p.TypeName);
-            if (p.DecomposedProducts.Count > 0)
-            {
-                foreach(var dp in p.DecomposedProducts)
+                if (!typeName.Contains(p.TypeName))
                 {
-                    dp.ThisGameObject.transform.parent = p.ThisGameObject.transform;
+                    typeName.Add(p.TypeName);
+                    var go = new GameObject(p.TypeName);
+                    go.transform.parent = sd.ThisGameObject.transform;
+                }
+                p.ThisGameObject.transform.parent = sd.ThisGameObject.transform.Find(p.TypeName);
+                if (p.RelatedProducts.Count > 0)
+                {
+                    foreach (var dp in p.RelatedProducts)
+                    {
+                        dp.ThisGameObject.transform.parent = p.ThisGameObject.transform;
+                        dp.RelatingProduct = p;
+                    }
                 }
             }
+            else if(p is ISpatialData)
+            {
+                spatialCount++;
+                p.ThisGameObject.transform.parent = sd.ThisGameObject.transform;
+                AppendRelatedProducts((ISpatialData)p);
+            }
+            p.RelatingProduct = sd;
         }
-        if (sd.SubSpatials.Count == 0)
+        if (spatialCount == 0)
         {
             return sd;
         }
-        foreach(var ss in sd.SubSpatials)
-        {
-            ss.ThisGameObject.transform.parent = sd.ThisGameObject.transform;
-            FindSubSpatialStructure(ss);
-        }
         return sd;
     }
+    */
 
     /// <summary>
     /// accoring MyBimProduct to create gameobject
     /// </summary>
-    /// <param name="product"></param>
+    /// <param name="element"></param>
     /// <returns></returns>
-    public static GameObject GenerateProduct(MyBimProduct product)
+    public static IProductData GenerateProduct(MyBimProduct element, List<IProductData> allPD)
     {
-        var go = new GameObject()
+        /*var go = new GameObject()
         {
-            name = product.entityLabel.ToString()
+            name = element.entityLabel.ToString()
         };
-        var data = go.AddComponent<ProductData>();
-        data.ProductGeoData = product;
-        SomeValue.products.Add(data);
+        var data = go.AddComponent<ElementData>();
+        data.ProductGeoData = element;
+        SomeValue.Elements.Add(data);
 
         var prodCtrl = go.AddComponent<ProductController>();
         prodCtrl.id = data.ProductGeoData.entityLabel;
 
-        foreach (var si in product.shapeInstances)
+        foreach (var si in element.shapeInstances)
             GenerateShapeInstance(si, go);
-        return go;
+        return go;*/
+        var productData = allPD.First(e => e.EntityLabel == element.entityLabel);
+        if(!(productData is ISpaceData))
+            productData.ProductGeoData = element;
+        allPD.Remove(productData);
+
+        var prodCtrl = productData.ThisGameObject.AddComponent<ProductController>();
+        prodCtrl.id = productData.EntityLabel;
+
+        foreach (var si in element.shapeInstances)
+            GenerateShapeInstance(si, productData.ThisGameObject);
+
+        return productData;
     }
 
     /// <summary>
@@ -101,15 +122,15 @@ public class GenerateModel
         }
 
         var mr = shapeGO.AddComponent<MeshRenderer>();
-        var mat = new Material(Shader.Find("Standard"));
+        //var mat = new Material(Shader.Find("Standard"));
         var c = MyBimGeomorty.colors.Find(cl => cl.styleLabel == si.styleLabel);
-        mat.color = c.color;
-        mr.material = mat;
+        //mat.color = c.color;
+        mr.material = c.mat;
 
         if (c.color.a < 0.9f)
-            SetMaterialRenderingMode(mat, RenderingMode.Transparent);
+            SetMaterialRenderingMode(c.mat, RenderingMode.Transparent);
         else
-            SetMaterialRenderingMode(mat, RenderingMode.Opaque);
+            SetMaterialRenderingMode(c.mat, RenderingMode.Opaque);
     }
 
     public enum RenderingMode
@@ -171,7 +192,7 @@ public class GenerateModel
 
     public static void AppendCollider(IProductData product)
     {
-        if (product.ProductGeoData.shapeInstances.Count == 0)
+        if (product.ProductGeoData.Equals(MyBimProduct.Default) || product.ProductGeoData.shapeInstances.Count == 0)
             return;
 
         var mc = product.ThisGameObject.AddComponent<MeshCollider>();
@@ -190,8 +211,9 @@ public class GenerateModel
             }
         }
         mesh.CombineMeshes(combimes);
-        mesh.name = product.ProductName;
+        mesh.name = product.Name;
         mc.sharedMesh = mesh;
-        mc.convex = true;
+        if(product is IElementData)
+            mc.convex = true;
     }
 }
