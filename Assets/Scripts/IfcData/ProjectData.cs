@@ -60,13 +60,13 @@ public class ProjectData : MonoBehaviour, IProjectData
     {
         thisProject = ifcProj;
         _name = thisProject.Name;
-        typeName = thisProject.GetType().ToString();
+        typeName = thisProject.GetType().Name;
         label = thisProject.EntityLabel;
         globalID = thisProject.GlobalId;
         longName = thisProject.LongName;
         phase = thisProject.Phase;
 
         SomeValue.project = this;
-        ThisGameObject.name = Name;
+        ThisGameObject.name = Name + "[" + TypeName + "]#" + EntityLabel;
     }
 }

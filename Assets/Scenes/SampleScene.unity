@@ -666,7 +666,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6766916712659791888, guid: c7a5140117172a747a7ac65586cfe1b2,
         type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6766916712659791888, guid: c7a5140117172a747a7ac65586cfe1b2,
+        type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6766916712659791888, guid: c7a5140117172a747a7ac65586cfe1b2,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6766916712673854300, guid: c7a5140117172a747a7ac65586cfe1b2,

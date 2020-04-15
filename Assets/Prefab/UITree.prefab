@@ -268,8 +268,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.000014424324}
+  m_SizeDelta: {x: 237, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &6766916712659791890
 MonoBehaviour:
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 463, y: 40}
+  m_CellSize: {x: 700, y: 40}
   m_Spacing: {x: 0, y: 2}
   m_Constraint: 1
   m_ConstraintCount: 1
@@ -747,7 +747,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6766916712773310141}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.6614286
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -822,7 +822,7 @@ PrefabInstance:
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 350
       objectReference: {fileID: 0}
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}
@@ -832,12 +832,12 @@ PrefabInstance:
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 700
       objectReference: {fileID: 0}
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}
@@ -847,7 +847,7 @@ PrefabInstance:
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}
@@ -857,7 +857,7 @@ PrefabInstance:
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7021917719767304885, guid: 6899842bf66081b46bfb26adac9c6af1,
         type: 3}

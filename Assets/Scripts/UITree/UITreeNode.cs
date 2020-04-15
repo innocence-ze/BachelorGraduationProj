@@ -7,7 +7,6 @@ using System.Collections.Generic;
 public class UITreeNode : UIBehaviour
 {
     #region private && public  members
-
     private UITreeData TreeData = null;
     private UITree UITree = null;
     private Toggle toggle = null;
@@ -32,6 +31,7 @@ public class UITreeNode : UIBehaviour
         text = _container.Find("Text").GetComponent<Text>();
         _toggleTransform = toggle.transform.Find("Image");
         UITree = _myTransform.parent.parent.parent.GetComponent<UITree>();
+
     }
     private void ResetComponent()
     {
@@ -53,26 +53,7 @@ public class UITreeNode : UIBehaviour
         text.text = data.Name;
         toggle.isOn = false;
         toggle.onValueChanged.AddListener(OpenOrClose);
-        _container.localPosition += new Vector3(_container.GetComponent<RectTransform>().sizeDelta.y * TreeData.Layer, 0, 0);
-        if (data.ChildNodes.Count.Equals(0))
-        {
-            _toggleTransform.gameObject.SetActive(false);
-            icon.sprite = UITree.m_lastLayerIcon;
-        }
-        else
-            icon.sprite = toggle.isOn ? UITree.m_openIcon : UITree.m_closeIcon;
-    }
-
-    [Obsolete("This method is replaced by Inject")]
-    public void SetData(UITreeData data)
-    {
-        if (null == _myTransform)
-            GetComponent();
-        ResetComponent();
-        TreeData = data;
-        text.text = data.Name;
-        toggle.isOn = false;
-        toggle.onValueChanged.AddListener(OpenOrClose);
+        icon.GetComponent<Button>().onClick.AddListener(GetProduct);
         _container.localPosition += new Vector3(_container.GetComponent<RectTransform>().sizeDelta.y * TreeData.Layer, 0, 0);
         if (data.ChildNodes.Count.Equals(0))
         {
@@ -113,6 +94,25 @@ public class UITreeNode : UIBehaviour
     private void RemoveListener()
     {
         toggle.onValueChanged.RemoveListener(OpenOrClose);
+        icon.GetComponent<Button>().onClick.RemoveListener(GetProduct);
+    }
+
+    private void GetProduct()
+    {
+        var go = SomeValue.project.EntityLabel == TreeData.Label ? SomeValue.project.ThisGameObject : null;
+        if(go == null)
+        {
+            var spa = SomeValue.spatialStructures.Find(ss => ss.EntityLabel == TreeData.Label);
+            if (spa != null)
+                go = spa.ThisGameObject;
+        }
+        if (go == null)
+        {
+            var ele = SomeValue.Elements.Find(e => e.EntityLabel == TreeData.Label);
+            if (ele != null)
+                go = ele.ThisGameObject;
+        }
+        GameEvents.current.selectedProduct = go;
     }
 
     #endregion

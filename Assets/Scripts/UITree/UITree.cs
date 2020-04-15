@@ -17,11 +17,6 @@ public class UITree : UIBehaviour
 
     #region external call interface
 
-    public void Initial()
-    {
-
-    }
-
     public void Inject(UITreeData rootData)
     {
         if (null == m_container)

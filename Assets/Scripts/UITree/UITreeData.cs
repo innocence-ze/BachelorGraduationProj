@@ -124,6 +124,7 @@ public class UITreeData
             var hashCode = (Parent != null ? Parent.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (ChildNodes != null ? ChildNodes.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ Layer;
+            hashCode = (hashCode * 397) ^ Label;
             hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
             return hashCode;
         }
