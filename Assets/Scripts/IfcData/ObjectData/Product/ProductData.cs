@@ -17,3 +17,8 @@ public interface IProductData
     string ObjectType { get; set; }
 
 }
+
+public class ProductData : MonoBehaviour
+{
+
+}

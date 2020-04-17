@@ -64,6 +64,23 @@ public class UITreeNode : UIBehaviour
             icon.sprite = toggle.isOn ? UITree.m_openIcon : UITree.m_closeIcon;
     }
 
+    public void Clear()
+    {
+        RemoveListener();
+        text.text = "IfcProject";
+        toggle.isOn = true;
+        icon.sprite = null;
+        TreeData = null;
+        UITree = null;
+        toggle = null;
+        icon = null;
+        text = null;
+        _toggleTransform = null;
+        _myTransform = null;
+        _container = null;
+        _children.Clear();
+    }
+
     #endregion
 
     #region open && close

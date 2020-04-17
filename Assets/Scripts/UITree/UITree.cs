@@ -23,6 +23,23 @@ public class UITree : UIBehaviour
             GetComponent();
         TreeRootNode.Inject(rootData);
     }
+
+    public void Clear()
+    {
+        if (m_container == null)
+            return;
+        if (m_poolParent != null)
+            Destroy(m_poolParent);
+        if (m_container.childCount > 1)
+            for(int i = 1; i < m_container.childCount; i++)
+                Destroy(m_container.GetChild(i).gameObject, 0.1f);
+        m_pool.Clear();
+        TreeRootNode.Clear();
+        TreeRootNode = null;
+        m_container = null;
+        m_nodePrefab = null;
+        m_poolParent = null;
+}
     #endregion
 
     #region private && public members

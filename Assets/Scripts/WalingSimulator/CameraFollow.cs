@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    private Transform target;
+    public Transform target;
 
     float distance;
     Vector3 offsitePos;
@@ -33,20 +33,9 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null)
             return;
-        //ScrollView();
         RotateView();
         transform.position = offsitePos + target.position;
     }
-
-    //void ScrollView()
-    //{
-    //    if(Input.GetAxis("Mouse ScrollWheel") != 0)
-    //    {
-    //        distance -= Input.GetAxis("Mouse ScrollWheel") * scrollSpeed * Time.deltaTime;
-    //        distance = Mathf.Clamp(distance, minDistance, maxDistance);
-    //        offsitePos = (transform.position - target.position).normalized * distance;
-    //    }
-    //}
     
     void RotateView()
     {
