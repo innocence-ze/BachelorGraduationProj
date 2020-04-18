@@ -12,7 +12,20 @@ public interface ISpatialData: IProductData
      #space*/
      string LongName { get; set; }
     IIfcSpatialStructureElement ThisStructure { get; set; }
-    void InitialSpatialElement(IIfcSpatialStructureElement ifcSE);
-    void AddRelatedProduct(IElementData ele);
-    void AddRelatedProduct(ISpatialData spat);
+}
+
+public class SpatialData : ProductData, ISpatialData
+{
+    private string longName;
+    private IIfcSpatialStructureElement thisStructure;
+
+    public string LongName { get => longName; set => longName = value; }
+    public IIfcSpatialStructureElement ThisStructure { get => thisStructure; set => thisStructure = value; }
+
+    public override void InitialObject(IIfcObject ifcObj)
+    {
+        base.InitialObject(ifcObj);
+        thisStructure = ifcObj as IIfcSpatialStructureElement;
+        longName = thisStructure.LongName;
+    }
 }

@@ -112,34 +112,35 @@ public class GameEvents : MonoBehaviour
     private void GenerateUiTree(IProjectData projData)
     {
         var uiTreeData = new UITreeData(projData.Name, projData.EntityLabel);
-        foreach (var prodData in projData.RelatedProducts)
+        foreach (var prodData in projData.RelatedObjects)
         {
             Helper(prodData, uiTreeData);
         }
         uiTree.Inject(uiTreeData);
     }
 
-    private void Helper(IProductData prodData, UITreeData parUiTree)
+    private void Helper(IObjectData objData, UITreeData parUiTree)
     {
-        var curUiTree = new UITreeData(prodData.Name, prodData.EntityLabel);
-        if (prodData is IElementData)
+        var curUiTree = new UITreeData(objData.Name, objData.EntityLabel);
+        if (objData is IElementData)
         {
-            var typeUiTreeData = parUiTree.FindChildren(prodData.ProductGeoData.typeId);
+            IElementData eleData = objData as IElementData;
+            var typeUiTreeData = parUiTree.FindChildren(eleData.ProductGeoData.typeId);
             if (typeUiTreeData == default)
             {
-                typeUiTreeData = new UITreeData(prodData.TypeName, prodData.ProductGeoData.typeId);
+                typeUiTreeData = new UITreeData(eleData.TypeName, eleData.ProductGeoData.typeId);
                 parUiTree.AddChild(typeUiTreeData);
             }
-            var curEleUiTreeData = new UITreeData(prodData.Name, prodData.EntityLabel);
+            var curEleUiTreeData = new UITreeData(objData.Name, objData.EntityLabel);
             typeUiTreeData.AddChild(curEleUiTreeData);
-            foreach (var decEle in prodData.RelatedProducts)
+            foreach (var decEle in objData.RelatedObjects)
             {
                 curEleUiTreeData.AddChild(new UITreeData(decEle.Name, decEle.EntityLabel));
             }
             return;
         }
         parUiTree.AddChild(curUiTree);
-        foreach (var p in prodData.RelatedProducts)
+        foreach (var p in objData.RelatedObjects)
         {
             Helper(p, curUiTree);
         }

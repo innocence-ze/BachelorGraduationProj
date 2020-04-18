@@ -23,10 +23,10 @@ public class BimReader
             var proj = model.Instances.FirstOrDefault<IIfcProject>();
             var go = new GameObject();
             var pd = go.AddComponent<ProjectData>();
-            pd.InitialProject(proj);
+            pd.InitialObject(proj);
 
             foreach (var item in proj.IsDecomposedBy.SelectMany(r => r.RelatedObjects))
-                pd.AddRelatedProduct(GetSpatialSturcture(item));
+                pd.AddRelatedObjects(GetSpatialSturcture(item));
 
             //var spatialProducts = SomeValue.Elements.FindAll(p => p.HaveSpatialStructure == false);
             //AddGeoProductToSpatialStructure(SomeValue.spatialStructures, spatialProducts);
@@ -83,8 +83,8 @@ public class BimReader
                         {
                             var go = new GameObject();
                             var pd = go.AddComponent<ElementData>();
-                            pd.InitialElement(element as IIfcElement);
-                            spd.AddRelatedProduct(pd);
+                            pd.InitialObject(element as IIfcElement);
+                            spd.AddRelatedObjects(pd);
                             if (element.IsDecomposedBy != null && element.IsDecomposedBy.Count() > 0)
                             {
                                 pd.SetDecomposeProduct(element.IsDecomposedBy);
@@ -97,7 +97,7 @@ public class BimReader
 
         //use IfcRelAggregares to obtain sub spatial structure
         foreach (var item in cur.IsDecomposedBy.SelectMany(r => r.RelatedObjects))
-            spd.AddRelatedProduct(GetSpatialSturcture(item));
+            spd.AddRelatedObjects(GetSpatialSturcture(item));
         return spd;
     }
 
@@ -154,7 +154,7 @@ public class BimReader
         }
         if (sp != null)
         {
-            sp.InitialSpatialElement(s);
+            sp.InitialObject(s);
         }
         return sp;
     }

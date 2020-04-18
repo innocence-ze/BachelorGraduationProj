@@ -4,9 +4,8 @@ using UnityEngine;
 
 public static class SomeValue
 {
-#if UNITY_EDITOR
     public static string processName = Application.dataPath + "/Plugins/IfcToWexBim.exe";
-#endif
+
 
     public static string fileName = default;
     public static string WexbimFileName => fileName + ".wexBIM";
