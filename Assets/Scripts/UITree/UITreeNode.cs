@@ -67,7 +67,7 @@ public class UITreeNode : UIBehaviour
     public void Clear()
     {
         RemoveListener();
-        text.text = "IfcProject";
+        text.text = "Hierarchy";
         toggle.isOn = true;
         icon.sprite = null;
         TreeData = null;

@@ -214,6 +214,12 @@ public class GenerateModel
         mesh.name = product.Name;
         mc.sharedMesh = mesh;
         if(product is IElementData)
-            mc.convex = true;
+        {
+            IElementData ele = product as IElementData;
+            if(ele.HasOpening == false)
+            {
+                mc.convex = true;
+            }
+        }
     }
 }

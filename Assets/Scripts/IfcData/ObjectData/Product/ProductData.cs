@@ -5,17 +5,10 @@ using Xbim.Ifc2x3.Interfaces;
 public interface IProductData : IObjectData
 {
     IIfcProduct ThisProduct { get; set; }
-    //IProductData RelatingObject { get; set; }
-    //List<IProductData> RelatedObjects { get; set; }
-    //GameObject ThisGameObject { get; }
     MyBimProduct ProductGeoData { get; set; }
 
-    //string Name { get; set; }
     string TypeName { get; set; }
-    //int EntityLabel { get; set; }
-    //string GlobalID { get; set; }
     string ObjectType { get; set; }
-
 }
 
 public class ProductData : ObjectData,IProductData
@@ -37,6 +30,12 @@ public class ProductData : ObjectData,IProductData
         thisProduct = ifcObj as IIfcProduct;
         typeName = thisProduct.GetType().Name;
         objectType = thisProduct.ObjectType;
+        SetGeneralProperties();
+    }
 
+    public new void SetGeneralProperties()
+    {
+        generalProperties.Add("TypeName", typeName);
+        generalProperties.Add("ObjectType", objectType);
     }
 }

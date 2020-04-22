@@ -9,8 +9,9 @@ public class GameEvents : MonoBehaviour
 {
     public static GameEvents current;
 
-
+    [HideInInspector]
     public GameObject selectedProduct;
+    private GameObject lastSelect = null;
 
     private void Awake()
     {
@@ -160,5 +161,100 @@ public class GameEvents : MonoBehaviour
         MyBimGeomorty.products.Clear();
 
         uiTree.Clear();
+        ClearGeneralPropertiesPannel();
+        ClearPropertiesPannel();
+    }
+
+    private void SetTextFormat(Text text, Text formatedText)
+    {
+        text.color = formatedText.color;
+        text.alignment = formatedText.alignment;
+        text.font = formatedText.font;
+        text.fontSize = formatedText.fontSize;
+    }
+
+    public GameObject propertiesPannel;
+    private List<GameObject> propertiesText = new List<GameObject>();
+
+    private void ChangePropertiesPannel()
+    {
+        ClearPropertiesPannel();
+        var properties = selectedProduct.GetComponent<ObjectData>().GetProperties();
+        var content = propertiesPannel.GetComponentInChildren<GridLayoutGroup>();
+        foreach(var prop in properties)
+        {
+            var go = new GameObject();
+            go.transform.SetParent(content.transform);
+            var text = go.AddComponent<Text>();
+            text.text = " ▲" + prop.Key;
+            SetTextFormat(text, content.transform.GetChild(0).GetComponent<Text>());
+            text.fontStyle = FontStyle.Bold;
+            propertiesText.Add(go);
+            foreach(var propData in prop.Value)
+            {
+                var dataKeyGo = new GameObject();
+                dataKeyGo.transform.SetParent(content.transform);
+                var dataKeyText = dataKeyGo.AddComponent<Text>();
+                dataKeyText.text = "     " + propData.Key + ":";
+                SetTextFormat(dataKeyText, content.transform.GetChild(0).GetComponent<Text>());
+                propertiesText.Add(dataKeyGo);
+
+                var dataValueGo = new GameObject();
+                dataValueGo.transform.SetParent(content.transform);
+                var dataValueText = dataValueGo.AddComponent<Text>();
+                dataValueText.text = "         --" + propData.Value;
+                SetTextFormat(dataValueText, content.transform.GetChild(0).GetComponent<Text>());
+                propertiesText.Add(dataValueGo);
+            }
+        }
+    }
+
+    private void ClearPropertiesPannel()
+    {
+        foreach(var go in propertiesText)
+        {
+            go.SetActive(false);
+            Destroy(go, 0.1f);
+        }
+        propertiesText.Clear();
+    }
+
+    public GameObject generalProertiesPannel;
+    private List<GameObject> generalPropTexts = new List<GameObject>();
+    
+    private void ChangeGeneralPropertiesPannel()
+    {
+        ClearGeneralPropertiesPannel();
+        var generalProperties = selectedProduct.GetComponent<ObjectData>().GetGeneralProperties();
+        var content = generalProertiesPannel.GetComponentInChildren<GridLayoutGroup>();
+        foreach (var genProp in generalProperties)
+        {
+            var go = new GameObject();
+            go.transform.SetParent(content.transform);
+            var text = go.AddComponent<Text>();
+            text.text = " " + genProp.Key.PadRight(30, '·') + genProp.Value;
+            SetTextFormat(text, content.transform.GetChild(0).GetComponent<Text>());
+            generalPropTexts.Add(go);
+        }
+    }
+
+    private void ClearGeneralPropertiesPannel()
+    {
+        foreach (var go in generalPropTexts)
+        {
+            go.SetActive(false);
+            Destroy(go, 0.1f);
+        }
+        generalPropTexts.Clear();
+    }
+
+    private void Update()
+    {
+        if (lastSelect != selectedProduct && selectedProduct != null)
+        {
+            lastSelect = selectedProduct;
+            ChangePropertiesPannel();
+            ChangeGeneralPropertiesPannel();
+        }
     }
 }

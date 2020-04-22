@@ -76,7 +76,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: IfcProject
+  m_Text: Hierarchy
 --- !u!1 &7021917718759016280
 GameObject:
   m_ObjectHideFlags: 0

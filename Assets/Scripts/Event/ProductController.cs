@@ -17,7 +17,6 @@ public class ProductController : MonoBehaviour
         if (id != this.id)
             return null;
 
-        Debug.Log(gameObject.name);
         return gameObject;
     }
 

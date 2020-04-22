@@ -57,37 +57,13 @@ public class BimReader
                 {
                     foreach (var element in containedElements)
                     {
-                        //use productData.entityLabel to find element's geomotry data
-                        /*var ele = SomeValue.buildingElements.Find(e => e.ProductGeoData.entityLabel == element.EntityLabel);
-                        if(!(element is IIfcElement))
-                        {
-                            continue;
-                        }
-                        //this is mainly because of some element is decomposed by some subElement.e.g.(stair=>stairFilght+Railing)
-                        if (ele == null)
-                        {
-                            var go = new GameObject();
-                            var pd = go.AddComponent<ElementData>();
-                            pd.ProductGeoData = new MyBimProduct(element.EntityLabel, (short)element.EntityLabel);
-                            pd.InitialElement(element as IIfcElement);
-                            sp.AddRelatedProduct(pd);
-                            SetDecomposeProduct(pd,element.IsDecomposedBy);
-                            //Debug.Log(sp.Name + " : " + element.Name + ", [" + element.GetType().Name + "] " + element.EntityLabel+" countain subProduct: " + element.IsDecomposedBy.Count());                           
-                        }
-                        else
-                        {
-                            ele.InitialElement(element as IIfcElement);
-                            sp.AddRelatedProduct(ele);
-                        }*/
                         if (element is IIfcElement)
                         {
-                            var go = new GameObject();
-                            var pd = go.AddComponent<ElementData>();
-                            pd.InitialObject(element as IIfcElement);
-                            spd.AddRelatedObjects(pd);
+                            var eled = InstantiateCurElement(element as IIfcElement);
+                            spd.AddRelatedObjects(eled);
                             if (element.IsDecomposedBy != null && element.IsDecomposedBy.Count() > 0)
                             {
-                                pd.SetDecomposeProduct(element.IsDecomposedBy);
+                                eled.SetDecomposeProduct(element.IsDecomposedBy);
                             }
                         }
                     }
@@ -101,27 +77,6 @@ public class BimReader
         return spd;
     }
 
-    /// <summary>
-    /// set decomposed product and return decomposingProducts
-    /// </summary>
-    /// <param name="eleData"></param>
-    /// <param name="connects"></param>
-    /// <returns></returns>
-    //private static List<IElementData> SetDecomposeProduct(IElementData eleData, IEnumerable<IIfcRelDecomposes> connects)
-    //{
-    //    List<IElementData> eds = new List<IElementData>();
-    //    foreach(var c in connects)
-    //    {
-    //        foreach (var prod in c.RelatedObjects)
-    //        {
-    //            var ed = SomeValue.Elements.Find(p => p.ProductGeoData.entityLabel == prod.EntityLabel);
-    //            ed.InitialElement(prod as IIfcElement);
-    //            eds.Add(ed);
-    //            eleData.AddRelatedProduct(ed);
-    //        }
-    //    }
-    //    return eds;
-    //}
 
     /// <summary>
     /// instantiate spatialData by ifcSpatialStructureElement
@@ -159,38 +114,25 @@ public class BimReader
         return sp;
     }
    
-    /// <summary>
-    /// some spatialStructure have geomotry, append them
-    /// </summary>
-    /// <param name="sds"></param>
-    /// <param name="pds"></param>
-   /* private static void AddGeoProductToSpatialStructure(List<ISpatialData> sds, List<IElementData> pds)
+    private static IElementData InstantiateCurElement(IIfcElement e)
     {
-        foreach (var sd in sds)
+        var go = new GameObject();
+        IElementData ele;
+        if(e is IIfcDoor)
         {
-            var pd = pds.Find(p => p.ProductGeoData.entityLabel == sd.EntityLabel);
-            if (pd != null)
-            {
-                pds.Remove(pd);
-                SomeValue.Elements.Remove(pd);
-                var spd = sd.ThisGameObject.AddComponent<ElementData>();
-                spd.ProductGeoData = pd.ProductGeoData;
-                spd.ThisElement = pd.ThisElement;
-
-                var children = pd.ThisGameObject.GetComponentsInChildren<MeshRenderer>();
-                if(sd.ThisStructure is IIfcSpace)
-                    foreach (var c in children)
-                    {
-                        c.transform.parent = sd.ThisGameObject.transform;
-                        c.gameObject.SetActive(false);
-                    }
-                else
-                    foreach (var c in children)
-                        c.transform.parent = sd.ThisGameObject.transform;
-                Object.Destroy(pd.ThisGameObject);
-            }
+            ele = go.AddComponent<ElementData>();
         }
-    }*/
+        else
+        {
+            ele = go.AddComponent<ElementData>();
+        }
+        if(ele!=null)
+        {
+            ele.InitialObject(e);
+        }
+        return ele;
+    }
+
     #endregion
 
     /// <summary>
