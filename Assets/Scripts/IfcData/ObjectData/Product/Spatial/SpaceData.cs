@@ -4,14 +4,17 @@ using UnityEngine;
 using Xbim.Ifc2x3.Interfaces; 
 public interface ISpaceData : ISpatialData
 {
-    string Elevation { get; set; }
+    string ElevationWithFloor { get; set; }
+    string SpaceType { get; set; }
 } 
 public class SpaceData : SpatialData, ISpaceData
 {
     IIfcSpace thisSpace;
-    string elevation;
+    string elevationWithFloor;
+    string spaceType;
 
-    public string Elevation { get => elevation; set => elevation = value; }
+    public string ElevationWithFloor { get => elevationWithFloor; set => elevationWithFloor = value; }
+    public string SpaceType { get => spaceType; set => spaceType = value; }
 
 
     public override void InitialObject(IIfcObject ifcObj)
@@ -19,14 +22,18 @@ public class SpaceData : SpatialData, ISpaceData
         base.InitialObject(ifcObj);
 
         thisSpace = ifcObj as IIfcSpace;
+        
         if (thisSpace.ElevationWithFlooring.HasValue)
-            elevation = thisSpace.ElevationWithFlooring.Value.ToString();
+            elevationWithFloor = thisSpace.ElevationWithFlooring.Value.ToString();
+        spaceType = thisSpace.InteriorOrExteriorSpace.ToString();
         ThisGameObject.name = Name + "[" + TypeName + "]#" + EntityLabel;
         SomeValue.spatialStructures.Add(this);
+        SetGeneralProperties();
     }
 
     public new void SetGeneralProperties()
     {
-        generalProperties.Add("Elevation", elevation);
+        generalProperties.Add("ElevationWithFloor", elevationWithFloor);
+        generalProperties.Add("SpaceType", spaceType);
     }
 }

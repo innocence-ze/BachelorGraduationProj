@@ -83,7 +83,7 @@ public class BimReader
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    private static ISpatialData InstantiateCurSpatial(IIfcSpatialStructureElement s)
+    public static ISpatialData InstantiateCurSpatial(IIfcSpatialStructureElement s)
     {
         var go = new GameObject();
         ISpatialData sp;
@@ -114,13 +114,21 @@ public class BimReader
         return sp;
     }
    
-    private static IElementData InstantiateCurElement(IIfcElement e)
+    public static IElementData InstantiateCurElement(IIfcElement e)
     {
         var go = new GameObject();
         IElementData ele;
         if(e is IIfcDoor)
         {
-            ele = go.AddComponent<ElementData>();
+            ele = go.AddComponent<DoorData>();
+        }
+        else if(e is IIfcWindow)
+        {
+            ele = go.AddComponent<WindowData>();
+        }
+        else if(e is IIfcWall)
+        {
+            ele = go.AddComponent<WallData>();
         }
         else
         {

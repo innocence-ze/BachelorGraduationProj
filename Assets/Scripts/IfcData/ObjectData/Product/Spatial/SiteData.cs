@@ -38,6 +38,7 @@ public class SiteData : SpatialData, ISiteData
 
         ThisGameObject.name = Name + "[" + TypeName + "]#" + EntityLabel;
         SomeValue.spatialStructures.Add(this);
+        SetGeneralProperties();
     }
 
     public new void SetGeneralProperties()

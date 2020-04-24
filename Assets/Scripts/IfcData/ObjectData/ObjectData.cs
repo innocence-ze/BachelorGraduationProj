@@ -35,6 +35,7 @@ public class ObjectData : MonoBehaviour, IObjectData
 
     protected Dictionary<string, string> generalProperties = new Dictionary<string, string>();
     private Dictionary<string, Dictionary<string, string>> properties = new Dictionary<string, Dictionary<string, string>>();
+    protected IIfcTypeObject objType = null;
 
     public IIfcObject ThisObject { get => thisObject; set => thisObject = value; }
     public GameObject ThisGameObject => gameObject;
@@ -91,6 +92,10 @@ public class ObjectData : MonoBehaviour, IObjectData
                     else
                         properties.Add(propName.ToString(), propDatas);
                 }
+            }
+            else if(define is IIfcRelDefinesByType type)
+            {
+                objType = type.RelatingType;
             }
         }
     }
