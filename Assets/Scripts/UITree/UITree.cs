@@ -29,7 +29,7 @@ public class UITree : UIBehaviour
         if (m_container == null)
             return;
         if (m_poolParent != null)
-            Destroy(m_poolParent);
+            Destroy(m_poolParent.gameObject);
         if (m_container.childCount > 1)
             for(int i = 1; i < m_container.childCount; i++)
                 Destroy(m_container.GetChild(i).gameObject, 0.1f);

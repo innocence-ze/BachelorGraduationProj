@@ -126,7 +126,7 @@ public class GameEvents : MonoBehaviour
         if (objData is IElementData)
         {
             IElementData eleData = objData as IElementData;
-            var typeUiTreeData = parUiTree.FindChildren(eleData.ProductGeoData.typeId);
+            var typeUiTreeData = parUiTree.FindChildren(eleData.TypeName);
             if (typeUiTreeData == default)
             {
                 typeUiTreeData = new UITreeData(eleData.TypeName, eleData.ProductGeoData.typeId);
@@ -163,6 +163,12 @@ public class GameEvents : MonoBehaviour
         uiTree.Clear();
         ClearGeneralPropertiesPannel();
         ClearPropertiesPannel();
+
+        Transform target = Camera.main.GetComponent<CameraFollow>().target;
+        target.position = Vector3.zero;
+        target.rotation = new Quaternion();
+        Camera.main.transform.position = new Vector3(0, 0, -1);
+        Camera.main.transform.rotation = new Quaternion();
     }
 
     private void SetTextFormat(Text text, Text formatedText)

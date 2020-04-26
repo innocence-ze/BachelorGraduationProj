@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Ifc2x3.Interfaces;
 
-public interface IWindowData
+public interface IWindowData : IElementData
 {
     string Height { get; set; }
     string Width { get; set; }

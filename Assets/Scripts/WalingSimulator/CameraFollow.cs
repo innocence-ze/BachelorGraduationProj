@@ -6,10 +6,8 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform target;
 
-    float distance;
+    float distance = 1;
     Vector3 offsitePos;
-    public float maxDistance;
-    public float minDistance;
 
     public float maxRotate;
     public float minRotate;
@@ -23,7 +21,6 @@ public class CameraFollow : MonoBehaviour
         if (target == null)
             return;
         transform.LookAt(transform);
-        distance = minDistance;
         offsitePos = distance * (transform.position - target.position).normalized;
         transform.position = offsitePos + target.position;
     }
@@ -47,7 +44,8 @@ public class CameraFollow : MonoBehaviour
             Vector3 originalPos = transform.position;
             Quaternion originalRot = transform.rotation;
             transform.RotateAround(target.position, transform.right, -rotateSpeed * Input.GetAxis("Mouse Y") * Time.deltaTime);
-            if (transform.eulerAngles.x < minRotate || transform.eulerAngles.x > maxRotate)
+            var x = transform.eulerAngles.x;
+            if ((x < minRotate && x > maxRotate -360) || ( x > maxRotate && x < 360 + minRotate))
             {
                 transform.position = originalPos;
                 transform.rotation = originalRot;

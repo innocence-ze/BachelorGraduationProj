@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Ifc2x3.Interfaces;
 
-public interface IWallData : IElementData
+public interface IPlateData : IElementData
 {
     string PredefinedType { get; set; }
 }
 
-public class WallData : ElementData, IWallData
+public class PlateData : ElementData, IPlateData
 {
-    private IIfcWall thisWall;
+    private IIfcPlate thisPlate;
     private string predefinedType;
 
     public string PredefinedType { get => predefinedType; set => predefinedType = value; }
@@ -18,12 +18,12 @@ public class WallData : ElementData, IWallData
     public override void InitialObject(IIfcObject ifcObj)
     {
         base.InitialObject(ifcObj);
-        thisWall = ifcObj as IIfcWall;
+        thisPlate = ifcObj as IIfcPlate;
 
         if (objType != null)
         {
-            IIfcWallType wallType = objType as IIfcWallType;
-            predefinedType = wallType.PredefinedType.ToString();
+            IIfcPlateType plateType = objType as IIfcPlateType;
+            predefinedType = plateType.PredefinedType.ToString();
         }
         SetGeneralProperties();
     }

@@ -87,26 +87,25 @@ public class BimReader
     {
         var go = new GameObject();
         ISpatialData sp;
-        if(s is IIfcSite)
+        switch (s)
         {
-            sp = go.AddComponent<SiteData>();
+            case IIfcSite _:
+                sp = go.AddComponent<SiteData>();
+                break;
+            case IIfcBuilding _:
+                sp = go.AddComponent<BuildingData>();
+                break;
+            case IIfcBuildingStorey _:
+                sp = go.AddComponent<BuildingStoreyData>();
+                break;
+            case IIfcSpace _:
+                sp = go.AddComponent<SpaceData>();
+                break;
+            default:
+                sp = null;
+                break;
         }
-        else if(s is IIfcBuilding)
-        {
-            sp = go.AddComponent<BuildingData>();
-        }
-        else if(s is IIfcBuildingStorey)
-        {
-            sp = go.AddComponent<BuildingStoreyData>();
-        }
-        else if(s is IIfcSpace)
-        {
-            sp = go.AddComponent<SpaceData>();
-        }
-        else
-        {
-            sp = null;
-        }
+      
         if (sp != null)
         {
             sp.InitialObject(s);
@@ -118,22 +117,76 @@ public class BimReader
     {
         var go = new GameObject();
         IElementData ele;
-        if(e is IIfcDoor)
+        switch (e)
         {
-            ele = go.AddComponent<DoorData>();
+            case IIfcBeam _:
+                ele = go.AddComponent<BeamData>();
+                break;
+            case IIfcBuildingElementProxy _:
+                ele = go.AddComponent<BuildingElementProxyData>();
+                break;
+            case IIfcColumn _:
+                ele = go.AddComponent<ColumnData>();
+                break;
+            case IIfcCovering _:
+                ele = go.AddComponent<CoveringData>();
+                break;
+            case IIfcCurtainWall _:
+                ele = go.AddComponent<CurtainWallData>();
+                break;
+            case IIfcDoor _:
+                ele = go.AddComponent<DoorData>();
+                break;
+            case IIfcFlowTerminal _:
+                ele = go.AddComponent<FlowTerminalData>();
+                break;
+            case IIfcFooting _:
+                ele = go.AddComponent<FootingData>();
+                break;
+            case IIfcFurnishingElement _:
+                ele = go.AddComponent<FurnitureData>();
+                break;
+            case IIfcMember _:
+                ele = go.AddComponent<MemberData>();
+                break;
+            case IIfcPile _:
+                ele = go.AddComponent<PileData>();
+                break;
+            case IIfcPlate _:
+                ele = go.AddComponent<PlateData>();
+                break;
+            case IIfcRailing _:
+                ele = go.AddComponent<RailingData>();
+                break;
+            case IIfcRamp _:
+                ele = go.AddComponent<RampData>();
+                break;
+            case IIfcRampFlight _:
+                ele = go.AddComponent<RampFlightData>();
+                break;
+            case IIfcRoof _:
+                ele = go.AddComponent<RoofData>();
+                break;
+            case IIfcSlab _:
+                ele = go.AddComponent<SlabData>();
+                break;
+            case IIfcStair _:
+                ele = go.AddComponent<StairData>();
+                break; 
+            case IIfcStairFlight _:
+                ele = go.AddComponent<StairFlightData>();
+                break;
+            case IIfcWall _:
+                ele = go.AddComponent<WallData>();
+                break;
+            case IIfcWindow _:
+                ele = go.AddComponent<WindowData>();
+                break;
+            default:
+                ele = go.AddComponent<ElementData>();
+                break;
         }
-        else if(e is IIfcWindow)
-        {
-            ele = go.AddComponent<WindowData>();
-        }
-        else if(e is IIfcWall)
-        {
-            ele = go.AddComponent<WallData>();
-        }
-        else
-        {
-            ele = go.AddComponent<ElementData>();
-        }
+
         if(ele!=null)
         {
             ele.InitialObject(e);

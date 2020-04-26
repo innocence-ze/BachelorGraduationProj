@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Ifc2x3.Interfaces;
 
-public interface IWallData : IElementData
+public interface IFlowTerminalData : IElementData
 {
     string PredefinedType { get; set; }
 }
 
-public class WallData : ElementData, IWallData
+public class FlowTerminalData : ElementData, IFlowTerminalData
 {
-    private IIfcWall thisWall;
+    private IIfcFlowTerminal thisFlowTerminal;
     private string predefinedType;
 
     public string PredefinedType { get => predefinedType; set => predefinedType = value; }
@@ -18,12 +18,12 @@ public class WallData : ElementData, IWallData
     public override void InitialObject(IIfcObject ifcObj)
     {
         base.InitialObject(ifcObj);
-        thisWall = ifcObj as IIfcWall;
+        thisFlowTerminal = ifcObj as IIfcFlowTerminal;
 
         if (objType != null)
         {
-            IIfcWallType wallType = objType as IIfcWallType;
-            predefinedType = wallType.PredefinedType.ToString();
+            if (objType is IIfcLightFixtureType flowTerminalType)
+                predefinedType = flowTerminalType.PredefinedType.ToString();
         }
         SetGeneralProperties();
     }

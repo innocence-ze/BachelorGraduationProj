@@ -1490,10 +1490,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  maxDistance: 15
-  minDistance: 1
-  maxRotate: 30
-  minRotate: -20
+  maxRotate: 45
+  minRotate: -45
   scrollSpeed: 100
   rotateSpeed: 100
 --- !u!1 &1038365145

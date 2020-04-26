@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Ifc2x3.Interfaces;
 
-public interface IWallData : IElementData
+public interface IBeamData : IElementData
 {
     string PredefinedType { get; set; }
 }
 
-public class WallData : ElementData, IWallData
+public class BeamData : ElementData, IBeamData
 {
-    private IIfcWall thisWall;
+    private IIfcBeam thisBeam;
     private string predefinedType;
 
     public string PredefinedType { get => predefinedType; set => predefinedType = value; }
@@ -18,12 +18,12 @@ public class WallData : ElementData, IWallData
     public override void InitialObject(IIfcObject ifcObj)
     {
         base.InitialObject(ifcObj);
-        thisWall = ifcObj as IIfcWall;
+        thisBeam = ifcObj as IIfcBeam;
 
         if (objType != null)
         {
-            IIfcWallType wallType = objType as IIfcWallType;
-            predefinedType = wallType.PredefinedType.ToString();
+            IIfcBeamType beamType = objType as IIfcBeamType;
+            predefinedType = beamType.PredefinedType.ToString();
         }
         SetGeneralProperties();
     }

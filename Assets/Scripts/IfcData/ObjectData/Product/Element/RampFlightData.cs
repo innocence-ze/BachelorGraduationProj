@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Ifc2x3.Interfaces;
 
-public interface IWallData : IElementData
+public interface IRampFlightData : IElementData
 {
     string PredefinedType { get; set; }
 }
 
-public class WallData : ElementData, IWallData
+public class RampFlightData : ElementData, IRampFlightData
 {
-    private IIfcWall thisWall;
+    private IIfcRampFlight thisRampFlight;
     private string predefinedType;
 
     public string PredefinedType { get => predefinedType; set => predefinedType = value; }
@@ -18,12 +18,12 @@ public class WallData : ElementData, IWallData
     public override void InitialObject(IIfcObject ifcObj)
     {
         base.InitialObject(ifcObj);
-        thisWall = ifcObj as IIfcWall;
+        thisRampFlight = ifcObj as IIfcRampFlight;
 
         if (objType != null)
         {
-            IIfcWallType wallType = objType as IIfcWallType;
-            predefinedType = wallType.PredefinedType.ToString();
+            IIfcRampFlightType rampFlightType = objType as IIfcRampFlightType;
+            predefinedType = rampFlightType.PredefinedType.ToString();
         }
         SetGeneralProperties();
     }
